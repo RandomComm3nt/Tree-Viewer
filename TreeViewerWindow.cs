@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Editor.TreeViewer
 {
-	public class TreeViewerWindow : EditorWindow
+	public abstract class TreeViewerWindow : EditorWindow
 	{
 		#region Fields
 
@@ -16,6 +16,10 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private Rect windowRect;
 		private TreeViewerPanel treeViewerPanel;
 		private NodeInspector nodeInspector;
+
+		#endregion
+
+		#region Properties
 
 		public List<TreeViewerNode> Nodes
 		{
@@ -34,19 +38,10 @@ namespace Assets.Scripts.Editor.TreeViewer
 
 		#region Methods
 
-		[MenuItem("Window/Tree Viewer")]
-		internal static void Init()
-		{
-			// Get existing open window or if none, make a new one
-			TreeViewerWindow window = GetWindow<TreeViewerWindow>();
-			window.Show();
-		}
-
-		private void Initiate()
+		protected virtual void Initiate()
 		{
 			init = true;
 			nodes = new List<TreeViewerNode>();
-			nodes.Add(new TreeViewerNode());
 			treeViewerPanel = new TreeViewerPanel(this);
 			nodeInspector = new NodeInspector(this);
 			ResizePanels();

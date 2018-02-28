@@ -1,6 +1,8 @@
 ﻿
 #region Using Statements
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 #endregion
@@ -10,7 +12,11 @@ namespace Assets.Scripts.Editor.TreeViewer
 	public class NodeInspector : EditorPanel
 	{
 		private GUIStyle style;
-		List<InspectorBlock> blocks;
+		private int selectedComponentToAdd;
+		private List<Type> componentOptionList;
+		private string[] componentOptionLabelList;
+		private List<InspectorBlock> blocks;
+		private Vector2 scrollPosition = new Vector2();
 		
 		public NodeInspector(TreeViewerWindow window) : base(window)
 		{
@@ -22,6 +28,13 @@ namespace Assets.Scripts.Editor.TreeViewer
 				}
 			};
 			blocks = new List<InspectorBlock>();
+			componentOptionList = new List<Type> { typeof(NodeInspector), typeof(GUIStyle) };
+			UpdateComponentOptions();
+		}
+
+		public void UpdateComponentOptions()
+		{
+			componentOptionLabelList = componentOptionList.Select(t => t.Name).ToArray();
 		}
 
 		public override void OnGUI()
@@ -33,7 +46,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 			string s = EditorGUILayout.TextField("Node Name");
 			EditorGUILayout.EndHorizontal();
 
-			EditorGUILayout.BeginScrollView(new Vector2());
+			scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 			for (int i = 0; i < blocks.Count; i++)
 			{
 				blocks[i].OnGUI();
@@ -41,6 +54,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 			EditorGUILayout.EndScrollView();
 
 			EditorGUILayout.BeginHorizontal();
+			selectedComponentToAdd = EditorGUILayout.Popup(selectedComponentToAdd, componentOptionLabelList);
 			if (GUILayout.Button("Add"))
 			{
 				blocks.Add(new InspectorBlock());

@@ -1,12 +1,15 @@
 ﻿
 #region Using Statements
+using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Assets.Scripts.Model.Data.TreeViewer;
 #endregion
 
 namespace Assets.Scripts.Editor.TreeViewer
 {
-	public class TreeViewerNode
+	public abstract class TreeViewerNode
 	{
 		#region Fields
 
@@ -19,6 +22,8 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private float height;
 
 		private bool mouseDown;
+
+		private TreeNode node;
 
 		#endregion
 
@@ -58,6 +63,8 @@ namespace Assets.Scripts.Editor.TreeViewer
 		{
 			mouseDown = false;
 		}
+
+		public abstract List<Type> GetAvailableNewComponents();
 
 		#endregion
 	}
