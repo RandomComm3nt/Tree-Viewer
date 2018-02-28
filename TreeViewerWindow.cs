@@ -13,6 +13,9 @@ namespace Assets.Scripts.Editor.TreeViewer
 
 		private bool init = false;
 		private List<TreeViewerNode> nodes;
+		private Rect windowRect;
+		private Rect treeRect;
+		private NodeInspector nodeInspector;
 
 		#endregion
 
@@ -30,17 +33,34 @@ namespace Assets.Scripts.Editor.TreeViewer
 		{
 			nodes = new List<TreeViewerNode>();
 			nodes.Add(new TreeViewerNode());
+			nodeInspector = new NodeInspector();
+			ResizePanels();
 		}
 
+		private void ResizePanels()
+		{
+			windowRect = position;
+			treeRect = new Rect(0, 0, windowRect.width * 0.75f, windowRect.height);
+			nodeInspector.PanelRect = new Rect(treeRect.xMax, 0, windowRect.width - treeRect.width, windowRect.height);
+		}
+		
 		private void OnGUI()
 		{
 			if (!init)
 				Initiate();
+
 			HandleEvents();
+
+			GUILayout.BeginArea(treeRect);
+
 			foreach (TreeViewerNode node in nodes)
 			{
 				node.Draw();
 			}
+
+			GUILayout.EndArea();
+
+			nodeInspector.OnGUI();
 		}
 
 		private void HandleEvents()
