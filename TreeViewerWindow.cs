@@ -14,8 +14,21 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private bool init = false;
 		private List<TreeViewerNode> nodes;
 		private Rect windowRect;
-		private Rect treeRect;
+		private TreeViewerPanel treeViewerPanel;
 		private NodeInspector nodeInspector;
+
+		public List<TreeViewerNode> Nodes
+		{
+			get
+			{
+				return nodes;
+			}
+
+			set
+			{
+				nodes = value;
+			}
+		}
 
 		#endregion
 
@@ -31,17 +44,19 @@ namespace Assets.Scripts.Editor.TreeViewer
 
 		private void Initiate()
 		{
+			init = true;
 			nodes = new List<TreeViewerNode>();
 			nodes.Add(new TreeViewerNode());
-			nodeInspector = new NodeInspector();
+			treeViewerPanel = new TreeViewerPanel(this);
+			nodeInspector = new NodeInspector(this);
 			ResizePanels();
 		}
 
 		private void ResizePanels()
 		{
 			windowRect = position;
-			treeRect = new Rect(0, 0, windowRect.width * 0.75f, windowRect.height);
-			nodeInspector.PanelRect = new Rect(treeRect.xMax, 0, windowRect.width - treeRect.width, windowRect.height);
+			treeViewerPanel.PanelRect = new Rect(0, 0, windowRect.width * 0.75f, windowRect.height);
+			nodeInspector.PanelRect = new Rect(treeViewerPanel.PanelRect.xMax, 0, windowRect.width - treeViewerPanel.PanelRect.width, windowRect.height);
 		}
 		
 		private void OnGUI()
@@ -51,15 +66,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 
 			HandleEvents();
 
-			GUILayout.BeginArea(treeRect);
-
-			foreach (TreeViewerNode node in nodes)
-			{
-				node.Draw();
-			}
-
-			GUILayout.EndArea();
-
+			treeViewerPanel.OnGUI();
 			nodeInspector.OnGUI();
 		}
 

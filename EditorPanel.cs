@@ -11,6 +11,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 	public class EditorPanel
 	{
 		private Rect panelRect;
+		private TreeViewerWindow window;
 
 		public Rect PanelRect
 		{
@@ -22,6 +23,14 @@ namespace Assets.Scripts.Editor.TreeViewer
 			set
 			{
 				panelRect = value;
+			}
+		}
+
+		protected TreeViewerWindow Window
+		{
+			get
+			{
+				return window;
 			}
 		}
 
@@ -38,6 +47,11 @@ namespace Assets.Scripts.Editor.TreeViewer
 			result.Apply();
 
 			return result;
+		}
+
+		public EditorPanel(TreeViewerWindow window)
+		{
+			this.window = window;
 		}
 
 		public virtual void OnGUI()
