@@ -25,6 +25,19 @@ namespace Assets.Scripts.Editor.TreeViewer
 
 		private TreeNode node;
 
+		public TreeNode Node
+		{
+			get
+			{
+				return node;
+			}
+
+			set
+			{
+				node = value;
+			}
+		}
+
 		#endregion
 
 		#region Methods

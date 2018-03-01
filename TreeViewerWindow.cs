@@ -1,6 +1,10 @@
 ﻿
 #region Using Statements
+using Assets.Scripts.Model.Data.TreeViewer;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 #endregion
@@ -15,7 +19,8 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private List<TreeViewerNode> nodes;
 		private Rect windowRect;
 		private TreeViewerPanel treeViewerPanel;
-		private NodeInspector nodeInspector;
+		protected NodeInspector nodeInspector;
+		private Dictionary<Type, Type> componentViewerMap;
 
 		#endregion
 
@@ -34,6 +39,19 @@ namespace Assets.Scripts.Editor.TreeViewer
 			}
 		}
 
+		public Dictionary<Type, Type> ComponentViewerMap
+		{
+			get
+			{
+				return componentViewerMap;
+			}
+
+			set
+			{
+				componentViewerMap = value;
+			}
+		}
+
 		#endregion
 
 		#region Methods
@@ -45,6 +63,12 @@ namespace Assets.Scripts.Editor.TreeViewer
 			treeViewerPanel = new TreeViewerPanel(this);
 			nodeInspector = new NodeInspector(this);
 			ResizePanels();
+
+			componentViewerMap = Assembly
+				.GetExecutingAssembly()
+				.GetTypes()
+				.Where(t => t.GetCustomAttributes(typeof(ComponentViewerAttribute), true).Length > 0)
+				.ToDictionary(t => (t.GetCustomAttribute(typeof(ComponentViewerAttribute)) as ComponentViewerAttribute).ComponentType, t => t) ;
 		}
 
 		private void ResizePanels()

@@ -7,19 +7,19 @@ using UnityEngine;
 
 namespace Assets.Scripts.Editor.TreeViewer
 {
-	public class InspectorBlock
+	public abstract class InspectorBlock
 	{
 		private bool expanded;
-		private string title;
 
 		public InspectorBlock()
 		{
-			title = "meh";
 		}
+
+		public abstract string GetLabel();
 
 		public virtual void OnGUI()
 		{
-			expanded = EditorGUILayout.Foldout(expanded, title);
+			expanded = EditorGUILayout.Foldout(expanded, GetLabel());
 			if (expanded)
 			{
 				EditorGUILayout.TextField("dfgasd");

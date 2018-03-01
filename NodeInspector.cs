@@ -1,5 +1,7 @@
 ﻿
 #region Using Statements
+using Assets.Scripts.Editor.EventTreeViewer;
+using Assets.Scripts.Model.Data.EventTreeViewer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,8 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private string[] componentOptionLabelList;
 		private List<InspectorBlock> blocks;
 		private Vector2 scrollPosition = new Vector2();
-		
+		private TreeViewerNode node;
+
 		public NodeInspector(TreeViewerWindow window) : base(window)
 		{
 			style = new GUIStyle()
@@ -29,12 +32,28 @@ namespace Assets.Scripts.Editor.TreeViewer
 			};
 			blocks = new List<InspectorBlock>();
 			componentOptionList = new List<Type> { typeof(NodeInspector), typeof(GUIStyle) };
-			UpdateComponentOptions();
+			NodeSelected(null);
 		}
 
-		public void UpdateComponentOptions()
+		public void NodeSelected(TreeViewerNode node)
 		{
-			componentOptionLabelList = componentOptionList.Select(t => t.Name).ToArray();
+			this.node = node;
+			if (node == null)
+			{
+
+			}
+			else
+			{
+				componentOptionList = node.GetAvailableNewComponents();
+				componentOptionLabelList = componentOptionList.Select(t => t.Name).ToArray();
+				blocks = node.Node.Components.Select(c =>
+				{
+					Type vc;
+					if (Window.ComponentViewerMap.TryGetValue(c.GetType(), out vc))
+						return (InspectorBlock)Activator.CreateInstance(vc);
+					else return null;
+				}).ToList();
+			}
 		}
 
 		public override void OnGUI()
@@ -49,7 +68,14 @@ namespace Assets.Scripts.Editor.TreeViewer
 			scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 			for (int i = 0; i < blocks.Count; i++)
 			{
-				blocks[i].OnGUI();
+				if (blocks[i] == null)
+				{
+
+				}
+				else
+				{
+					blocks[i].OnGUI();
+				}
 			}
 			EditorGUILayout.EndScrollView();
 
@@ -57,7 +83,8 @@ namespace Assets.Scripts.Editor.TreeViewer
 			selectedComponentToAdd = EditorGUILayout.Popup(selectedComponentToAdd, componentOptionLabelList);
 			if (GUILayout.Button("Add"))
 			{
-				blocks.Add(new InspectorBlock());
+				node.Node.AddComponent(componentOptionList[selectedComponentToAdd]);
+				NodeSelected(node);
 			}
 			EditorGUILayout.EndHorizontal();
 
