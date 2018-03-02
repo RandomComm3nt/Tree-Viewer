@@ -22,6 +22,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private TreeViewerPanel treeViewerPanel;
 		protected NodeInspector nodeInspector;
 		private Dictionary<Type, Type> componentViewerMap;
+		private TreeViewerNode selectedNode;
 
 		#endregion
 
@@ -50,6 +51,19 @@ namespace Assets.Scripts.Editor.TreeViewer
 			set
 			{
 				componentViewerMap = value;
+			}
+		}
+
+		public TreeViewerNode SelectedNode
+		{
+			get
+			{
+				return selectedNode;
+			}
+
+			set
+			{
+				selectedNode = value;
 			}
 		}
 
@@ -89,6 +103,16 @@ namespace Assets.Scripts.Editor.TreeViewer
 				windowRect.height - toolbar.PanelRect.height);
 		}
 		
+		public void SelectNode(TreeViewerNode node)
+		{
+			if (selectedNode != null)
+				selectedNode.Selected = false;
+			if (node != null)
+				node.Selected = true;
+			selectedNode = node;
+			nodeInspector.NodeSelected();
+		}
+
 		private void OnGUI()
 		{
 			if (!init)

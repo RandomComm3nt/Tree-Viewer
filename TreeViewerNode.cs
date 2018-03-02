@@ -25,6 +25,8 @@ namespace Assets.Scripts.Editor.TreeViewer
 
 		private TreeNode node;
 
+		private bool selected;
+
 		public TreeNode Node
 		{
 			get
@@ -35,6 +37,19 @@ namespace Assets.Scripts.Editor.TreeViewer
 			set
 			{
 				node = value;
+			}
+		}
+
+		public bool Selected
+		{
+			get
+			{
+				return selected;
+			}
+
+			set
+			{
+				selected = value;
 			}
 		}
 

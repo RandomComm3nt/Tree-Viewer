@@ -19,7 +19,6 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private string[] componentOptionLabelList;
 		private List<InspectorBlock> blocks;
 		private Vector2 scrollPosition = new Vector2();
-		private TreeViewerNode node;
 
 		public NodeInspector(TreeViewerWindow window) : base(window)
 		{
@@ -32,21 +31,20 @@ namespace Assets.Scripts.Editor.TreeViewer
 			};
 			blocks = new List<InspectorBlock>();
 			componentOptionList = new List<Type> { typeof(NodeInspector), typeof(GUIStyle) };
-			NodeSelected(null);
+			NodeSelected();
 		}
 
-		public void NodeSelected(TreeViewerNode node)
+		public void NodeSelected()
 		{
-			this.node = node;
-			if (node == null)
+			if (Window.SelectedNode == null)
 			{
 
 			}
 			else
 			{
-				componentOptionList = node.GetAvailableNewComponents();
+				componentOptionList = Window.SelectedNode.GetAvailableNewComponents();
 				componentOptionLabelList = componentOptionList.Select(t => t.Name).ToArray();
-				blocks = node.Node.Components.Select(c =>
+				blocks = Window.SelectedNode.Node.Components.Select(c =>
 				{
 					Type vc;
 					if (Window.ComponentViewerMap.TryGetValue(c.GetType(), out vc))
@@ -62,32 +60,38 @@ namespace Assets.Scripts.Editor.TreeViewer
 			EditorGUILayout.BeginVertical();
 
 			EditorGUILayout.BeginHorizontal();
-			string s = EditorGUILayout.TextField("Node Name");
-			EditorGUILayout.EndHorizontal();
-
-			scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
-			for (int i = 0; i < blocks.Count; i++)
+			if (Window.SelectedNode == null)
 			{
-				if (blocks[i] == null)
-				{
-
-				}
-				else
-				{
-					blocks[i].OnGUI();
-				}
+				EditorGUILayout.LabelField("No node selected.");
 			}
-			EditorGUILayout.EndScrollView();
-
-			EditorGUILayout.BeginHorizontal();
-			selectedComponentToAdd = EditorGUILayout.Popup(selectedComponentToAdd, componentOptionLabelList);
-			if (GUILayout.Button("Add"))
+			else
 			{
-				node.Node.AddComponent(componentOptionList[selectedComponentToAdd]);
-				NodeSelected(node);
-			}
-			EditorGUILayout.EndHorizontal();
+				string s = EditorGUILayout.TextField("Node Name");
+				EditorGUILayout.EndHorizontal();
 
+				scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+				for (int i = 0; i < blocks.Count; i++)
+				{
+					if (blocks[i] == null)
+					{
+
+					}
+					else
+					{
+						blocks[i].OnGUI();
+					}
+				}
+				EditorGUILayout.EndScrollView();
+
+				EditorGUILayout.BeginHorizontal();
+				selectedComponentToAdd = EditorGUILayout.Popup(selectedComponentToAdd, componentOptionLabelList);
+				if (GUILayout.Button("Add"))
+				{
+					Window.SelectedNode.Node.AddComponent(componentOptionList[selectedComponentToAdd]);
+					NodeSelected();
+				}
+				EditorGUILayout.EndHorizontal();
+			}
 			EditorGUILayout.EndVertical();
 			GUILayout.EndArea();
 		}
