@@ -63,7 +63,12 @@ namespace Assets.Scripts.Editor.TreeViewer
 
 			set
 			{
+				if (selectedNode != null)
+					selectedNode.Selected = false;
+				if (value != null)
+					value.Selected = true;
 				selectedNode = value;
+				nodeInspector.NodeSelected();
 			}
 		}
 
@@ -102,16 +107,6 @@ namespace Assets.Scripts.Editor.TreeViewer
 				windowRect.width - treeViewerPanel.PanelRect.width,
 				windowRect.height - toolbar.PanelRect.height);
 		}
-		
-		public void SelectNode(TreeViewerNode node)
-		{
-			if (selectedNode != null)
-				selectedNode.Selected = false;
-			if (node != null)
-				node.Selected = true;
-			selectedNode = node;
-			nodeInspector.NodeSelected();
-		}
 
 		private void OnGUI()
 		{
@@ -138,10 +133,10 @@ namespace Assets.Scripts.Editor.TreeViewer
 						eventHandled = true;
 						break;
 					}
-					// if not handled by node, handle as background click
-					if (!eventHandled)
-						HandleEventOnBackground();
 				}
+				// if not handled by node, handle as background click
+				if (!eventHandled)
+					HandleEventOnBackground();
 			}
 		}
 

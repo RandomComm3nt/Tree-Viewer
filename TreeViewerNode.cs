@@ -22,10 +22,13 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private float height;
 
 		private bool mouseDown;
+		private Vector2 mouseDownPosition;
 
 		private TreeNode node;
 
 		private bool selected;
+		private TreeViewerWindow window;
+		private bool clickedLastUpdate;
 
 		public TreeNode Node
 		{
@@ -53,16 +56,30 @@ namespace Assets.Scripts.Editor.TreeViewer
 			}
 		}
 
+		public float X
+		{
+			get
+			{
+				return x;
+			}
+
+			set
+			{
+				x = value;
+			}
+		}
+
 		#endregion
 
 		#region Methods
 
-		public TreeViewerNode()
+		public TreeViewerNode(TreeViewerWindow window)
 		{
 			x = 0;
 			y = 0;
 			width = 100;
 			height = 100;
+			this.window = window;
 		}
 
 		public void Draw()
@@ -72,15 +89,30 @@ namespace Assets.Scripts.Editor.TreeViewer
 
 		public bool HandleMouseEvent()
 		{
+			// Unity can't handle changes in mouse events that cause UI elements to change
+			// so we defer method to next update
+			if (Event.current.type == EventType.Layout && clickedLastUpdate)
+			{
+				Click();
+				clickedLastUpdate = false;
+				return true;
+			}
+
 			if (new Rect(x, y, width, height).Contains(Event.current.mousePosition))
 			{
 				if (Event.current.type == EventType.MouseDown)
 				{
 					mouseDown = true;
+					mouseDownPosition = Event.current.mousePosition;
 				}
 				else if (Event.current.type == EventType.MouseUp)
 				{
-					mouseDown = false;
+					if (mouseDown)
+					{
+						mouseDown = false;
+						if (Vector2.Distance(Event.current.mousePosition, mouseDownPosition) < 5f)
+							clickedLastUpdate = true;
+					}
 				}
 				return true;
 			}
@@ -90,6 +122,11 @@ namespace Assets.Scripts.Editor.TreeViewer
 		public void MouseUpOutside()
 		{
 			mouseDown = false;
+		}
+
+		private void Click()
+		{
+			window.SelectedNode = this;
 		}
 
 		public abstract List<Type> GetAvailableNewComponents();
