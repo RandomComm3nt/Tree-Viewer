@@ -18,6 +18,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private bool init = false;
 		private List<TreeViewerNode> nodes;
 		private Rect windowRect;
+		private WindowToolbar toolbar;
 		private TreeViewerPanel treeViewerPanel;
 		protected NodeInspector nodeInspector;
 		private Dictionary<Type, Type> componentViewerMap;
@@ -60,6 +61,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 		{
 			init = true;
 			nodes = new List<TreeViewerNode>();
+			toolbar = new WindowToolbar(this);
 			treeViewerPanel = new TreeViewerPanel(this);
 			nodeInspector = new NodeInspector(this);
 			ResizePanels();
@@ -74,8 +76,17 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private void ResizePanels()
 		{
 			windowRect = position;
-			treeViewerPanel.PanelRect = new Rect(0, 0, windowRect.width * 0.75f, windowRect.height);
-			nodeInspector.PanelRect = new Rect(treeViewerPanel.PanelRect.xMax, 0, windowRect.width - treeViewerPanel.PanelRect.width, windowRect.height);
+			toolbar.PanelRect = new Rect(0, 0, windowRect.xMax, 25f);
+			treeViewerPanel.PanelRect = new Rect (
+				0,
+				toolbar.PanelRect.yMax,
+				windowRect.width * 0.75f,
+				windowRect.height - toolbar.PanelRect.height);
+			nodeInspector.PanelRect = new Rect (
+				treeViewerPanel.PanelRect.xMax,
+				toolbar.PanelRect.yMax,
+				windowRect.width - treeViewerPanel.PanelRect.width,
+				windowRect.height - toolbar.PanelRect.height);
 		}
 		
 		private void OnGUI()
@@ -84,7 +95,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 				Initiate();
 
 			HandleEvents();
-
+			toolbar.OnGUI();
 			treeViewerPanel.OnGUI();
 			nodeInspector.OnGUI();
 		}
