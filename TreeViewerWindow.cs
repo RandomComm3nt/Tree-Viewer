@@ -1,5 +1,6 @@
 ﻿
 #region Using Statements
+using Assets.Scripts.Editor.TreeViewer.Popups;
 using Assets.Scripts.Model.Data.TreeViewer;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 		protected NodeInspector nodeInspector;
 		private Dictionary<Type, Type> componentViewerMap;
 		private TreeViewerNode selectedNode;
+		private Popup currentPopup;
 
 		#endregion
 
@@ -83,6 +85,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 			toolbar = new WindowToolbar(this);
 			treeViewerPanel = new TreeViewerPanel(this);
 			nodeInspector = new NodeInspector(this);
+			currentPopup = new NewTreePopup();
 			ResizePanels();
 
 			componentViewerMap = Assembly
@@ -100,7 +103,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 				0,
 				toolbar.PanelRect.yMax,
 				windowRect.width * 0.75f,
-				windowRect.height - toolbar.PanelRect.height);
+				windowRect.height - toolbar.PanelRect.height); 
 			nodeInspector.PanelRect = new Rect (
 				treeViewerPanel.PanelRect.xMax,
 				toolbar.PanelRect.yMax,
@@ -117,6 +120,10 @@ namespace Assets.Scripts.Editor.TreeViewer
 			toolbar.OnGUI();
 			treeViewerPanel.OnGUI();
 			nodeInspector.OnGUI();
+
+			BeginWindows();
+			currentPopup.OnGUI(1);
+			EndWindows();
 		}
 
 		private void HandleEvents()
