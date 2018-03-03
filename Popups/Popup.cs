@@ -12,9 +12,11 @@ namespace Assets.Scripts.Editor.TreeViewer.Popups
 	{
 		private Rect windowRect;
 		protected string title;
+		protected TreeViewerWindow parentWindow;
 
-		public Popup()
+		public Popup(TreeViewerWindow parentWindow)
 		{
+			this.parentWindow = parentWindow;
 			windowRect = new Rect(0, 50, 150, 150);
 		}
 

@@ -74,6 +74,19 @@ namespace Assets.Scripts.Editor.TreeViewer
 			}
 		}
 
+		public Popup CurrentPopup
+		{
+			get
+			{
+				return currentPopup;
+			}
+
+			set
+			{
+				currentPopup = value;
+			}
+		}
+
 		#endregion
 
 		#region Methods
@@ -85,7 +98,6 @@ namespace Assets.Scripts.Editor.TreeViewer
 			toolbar = new WindowToolbar(this);
 			treeViewerPanel = new TreeViewerPanel(this);
 			nodeInspector = new NodeInspector(this);
-			currentPopup = new NewTreePopup();
 			ResizePanels();
 
 			componentViewerMap = Assembly
@@ -121,9 +133,12 @@ namespace Assets.Scripts.Editor.TreeViewer
 			treeViewerPanel.OnGUI();
 			nodeInspector.OnGUI();
 
-			BeginWindows();
-			currentPopup.OnGUI(1);
-			EndWindows();
+			if (currentPopup != null)
+			{
+				BeginWindows();
+				currentPopup.OnGUI(1);
+				EndWindows();
+			}
 		}
 
 		private void HandleEvents()
