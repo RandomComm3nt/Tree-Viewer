@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Assets.Scripts.Model.Data.EventTreeViewer;
+using Assets.Scripts.Model.Data.TreeViewer;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,7 +39,10 @@ namespace Assets.Scripts.Editor.TreeViewer.Popups
 			{
 				try
 				{
-					File.WriteAllText(path + "/" + fileName + ".xml", "");
+					NodeTree t = new NodeTree();
+					t.AddNode(new EventTreeNode());
+					t.AddNode(new EventTreeNode());
+					t.Save(path + "/" + fileName + ".xml");
 					parentWindow.CurrentPopup = null;
 				}
 				catch (Exception e)
