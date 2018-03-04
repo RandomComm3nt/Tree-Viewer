@@ -1,6 +1,7 @@
 ﻿
 #region Using Statements
 using Assets.Scripts.Editor.TreeViewer.Popups;
+using Assets.Scripts.Model.Data.TreeViewer;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -41,7 +42,17 @@ namespace Assets.Scripts.Editor.TreeViewer
 
 			if (GUILayout.Button("Save", GUILayout.Width(100)))
 			{
-				Window.CurrentPopup = new SaveTreePopup(Window);
+				Window.SaveTree();
+			}
+
+			if (GUILayout.Button("SaveAs", GUILayout.Width(100)))
+			{
+				Window.CurrentPopup = new SaveAsTreePopup(Window);
+			}
+
+			if (GUILayout.Button("Add", GUILayout.Width(100)))
+			{
+				Window.AddNodeToTree();
 			}
 
 			GUILayout.EndHorizontal();

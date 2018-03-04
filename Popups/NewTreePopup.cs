@@ -14,7 +14,6 @@ namespace Assets.Scripts.Editor.TreeViewer.Popups
 	public class NewTreePopup : Popup
 	{
 		private string fileName = "";
-		private string path = "";
 
 		public NewTreePopup(TreeViewerWindow parentWindow) : base(parentWindow)
 		{
@@ -30,19 +29,11 @@ namespace Assets.Scripts.Editor.TreeViewer.Popups
 			fileName = EditorGUILayout.TextField(fileName);
 			EditorGUILayout.EndHorizontal();
 
-			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.LabelField("Path:");
-			path = EditorGUILayout.TextField(path);
-			EditorGUILayout.EndHorizontal();
-
 			if (GUILayout.Button("Create new file"))
 			{
 				try
 				{
-					NodeTree t = new NodeTree();
-					t.AddNode(new EventTreeNode());
-					t.AddNode(new EventTreeNode());
-					t.Save(path + "/" + fileName + ".xml");
+					parentWindow.NewTree(fileName);
 					parentWindow.CurrentPopup = null;
 				}
 				catch (Exception e)

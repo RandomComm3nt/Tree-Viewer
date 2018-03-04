@@ -17,6 +17,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 		#region Fields
 
 		private bool init = false;
+		private NodeTree tree;
 		private List<TreeViewerNode> nodes;
 		private Rect windowRect;
 		private WindowToolbar toolbar;
@@ -25,6 +26,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private Dictionary<Type, Type> componentViewerMap;
 		private TreeViewerNode selectedNode;
 		private Popup currentPopup;
+		public string treePath = "C:\\Users\\Rando\\Documents\\GitHub";
 
 		#endregion
 
@@ -36,11 +38,6 @@ namespace Assets.Scripts.Editor.TreeViewer
 			{
 				return nodes;
 			}
-
-			set
-			{
-				nodes = value;
-			}
 		}
 
 		public Dictionary<Type, Type> ComponentViewerMap
@@ -49,12 +46,8 @@ namespace Assets.Scripts.Editor.TreeViewer
 			{
 				return componentViewerMap;
 			}
-
-			set
-			{
-				componentViewerMap = value;
-			}
 		}
+
 
 		public TreeViewerNode SelectedNode
 		{
@@ -90,6 +83,22 @@ namespace Assets.Scripts.Editor.TreeViewer
 		#endregion
 
 		#region Methods
+
+		public void NewTree(string name)
+		{
+			NodeTree tree = new NodeTree()
+			{
+				Name = name
+			};
+			SetTree(tree);
+		}
+
+		public void SaveTree()
+		{
+			tree.Save(treePath + "/" + tree.Name + ".xml");
+		}
+
+		protected abstract TreeViewerNode CreateNewTreeViewerNode(TreeNode node);
 
 		protected virtual void Initiate()
 		{
@@ -128,10 +137,17 @@ namespace Assets.Scripts.Editor.TreeViewer
 			if (!init)
 				Initiate();
 
-			HandleEvents();
 			toolbar.OnGUI();
-			treeViewerPanel.OnGUI();
-			nodeInspector.OnGUI();
+			if (tree == null)
+			{
+
+			}
+			else
+			{
+				HandleEvents();
+				treeViewerPanel.OnGUI();
+				nodeInspector.OnGUI();
+			}
 
 			if (currentPopup != null)
 			{
@@ -171,6 +187,21 @@ namespace Assets.Scripts.Editor.TreeViewer
 					node.MouseUpOutside();
 				}
 			}
+		}
+
+		public void SetTree(NodeTree tree)
+		{
+			this.tree = tree;
+			nodes = tree.Nodes
+				.Select(n => CreateNewTreeViewerNode(n))
+				.ToList();
+		}
+
+		public void AddNodeToTree()
+		{
+			TreeNode n = new TreeNode();
+			tree.AddNode(n);
+			nodes.Add(CreateNewTreeViewerNode(n));
 		}
 
 		#endregion

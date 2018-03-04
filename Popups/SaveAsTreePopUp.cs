@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace Assets.Scripts.Editor.TreeViewer.Popups
 {
-	public class SaveTreePopup : Popup
+	public class SaveAsTreePopup : Popup
 	{
-		public SaveTreePopup(TreeViewerWindow parentWindow) : base(parentWindow)
+		public SaveAsTreePopup(TreeViewerWindow parentWindow) : base(parentWindow)
 		{
 			title = "Save Tree";
 		}
