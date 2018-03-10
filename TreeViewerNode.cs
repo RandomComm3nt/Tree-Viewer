@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Assets.Scripts.Model.Data.TreeViewer;
+using System.Linq;
 #endregion
 
 namespace Assets.Scripts.Editor.TreeViewer
@@ -13,7 +14,8 @@ namespace Assets.Scripts.Editor.TreeViewer
 	{
 		#region Fields
 
-		public static Color backgroundColour = Color.blue;
+		public static Color labelBackgroundColour = new Color(0.4f, 0.4f, 0.4f);
+		public static Color backgroundColour = new Color(0.3f, 0.3f, 0.3f);
 		public static Color outlineColour = Color.black;
 
 		private float x;
@@ -29,6 +31,13 @@ namespace Assets.Scripts.Editor.TreeViewer
 		private bool selected;
 		private TreeViewerWindow window;
 		private bool clickedLastUpdate;
+		public NodeLink parentLink;
+		public List<NodeLink> childLinks;
+		private List<TreeViewerNodeComponent> components;
+
+		#endregion
+
+		#region Properties
 
 		public TreeNode Node
 		{
@@ -40,6 +49,13 @@ namespace Assets.Scripts.Editor.TreeViewer
 			set
 			{
 				node = value;
+				components = node.Components.Select(c =>
+				{
+					Type vc;
+					if (window.ComponentViewerMap.TryGetValue(c.GetType(), out vc))
+						return (TreeViewerNodeComponent)Activator.CreateInstance(vc);
+					else return null;
+				}).ToList();
 			}
 		}
 
@@ -69,6 +85,27 @@ namespace Assets.Scripts.Editor.TreeViewer
 			}
 		}
 
+		public float Y
+		{
+			get
+			{
+				return y;
+			}
+
+			set
+			{
+				y = value;
+			}
+		}
+
+		public List<TreeViewerNodeComponent> Components
+		{
+			get
+			{
+				return components;
+			}
+		}
+
 		#endregion
 
 		#region Methods
@@ -80,11 +117,21 @@ namespace Assets.Scripts.Editor.TreeViewer
 			width = 100;
 			height = 100;
 			this.window = window;
+			childLinks = new List<NodeLink>();
+			components = new List<TreeViewerNodeComponent>();
 		}
 
 		public void Draw()
 		{
-			Handles.DrawSolidRectangleWithOutline(new Rect(x, y, width, height), backgroundColour, outlineColour);
+			Handles.DrawSolidRectangleWithOutline(new Rect(x, y + 20, width, height - 20), backgroundColour, outlineColour);
+			Handles.DrawSolidRectangleWithOutline(new Rect(x, y, width, 20), labelBackgroundColour, outlineColour);
+			Handles.Label(new Vector2(x+1, y+1), node.Name);
+			float componentHeight = 0f;
+			for (int i = 0; i < components.Count; i++)
+			{
+				componentHeight += components[i].DrawNodeContent(new Vector2(x, y + 20 + componentHeight));
+			}
+			height = componentHeight + 20;
 		}
 
 		public bool HandleMouseEvent()
@@ -130,6 +177,29 @@ namespace Assets.Scripts.Editor.TreeViewer
 		}
 
 		public abstract List<Type> GetAvailableNewComponents();
+
+		public float LayoutChildNodes()
+		{
+			float childHeight = 0;
+			for (int i = 0; i < childLinks.Count; i++)
+			{
+				if (i > 0)
+					childHeight += 10;
+				childLinks[i].childNode.Y = Y + childHeight;
+				childLinks[i].childNode.X = X + width + 10;
+				childHeight += childLinks[i].childNode.LayoutChildNodes();
+			}
+			return Mathf.Max(childHeight, height);
+		}
+
+		public void AddComponent(Type T)
+		{
+			Type vc;
+			if (window.ComponentViewerMap.TryGetValue(node.AddComponent(T).GetType(), out vc))
+			{
+				components.Add((TreeViewerNodeComponent)Activator.CreateInstance(vc));
+			}
+		}
 
 		#endregion
 	}

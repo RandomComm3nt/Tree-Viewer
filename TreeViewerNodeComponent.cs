@@ -7,23 +7,28 @@ using UnityEngine;
 
 namespace Assets.Scripts.Editor.TreeViewer
 {
-	public abstract class InspectorBlock
+	public abstract class TreeViewerNodeComponent
 	{
 		private bool expanded;
 
-		public InspectorBlock()
+		public TreeViewerNodeComponent()
 		{
 		}
 
 		public abstract string GetLabel();
 
-		public virtual void OnGUI()
+		public virtual void DrawInspectorBlock()
 		{
 			expanded = EditorGUILayout.Foldout(expanded, GetLabel());
 			if (expanded)
 			{
 				EditorGUILayout.TextField("dfgasd");
 			}
+		}
+
+		public virtual float DrawNodeContent(Vector2 position)
+		{
+			return 0f;
 		}
 	}
 }

@@ -48,7 +48,6 @@ namespace Assets.Scripts.Editor.TreeViewer
 			}
 		}
 
-
 		public TreeViewerNode SelectedNode
 		{
 			get
@@ -162,6 +161,7 @@ namespace Assets.Scripts.Editor.TreeViewer
 			// if active event, find node under mouse and handle event
 			if (Event.current != null)
 			{
+				Event.current.mousePosition = new Vector2(Event.current.mousePosition.x, Event.current.mousePosition.y - toolbar.PanelRect.height); 
 				bool eventHandled = false;
 				foreach (TreeViewerNode node in nodes)
 				{
@@ -201,7 +201,20 @@ namespace Assets.Scripts.Editor.TreeViewer
 		{
 			TreeNode n = new TreeNode();
 			tree.AddNode(n);
-			nodes.Add(CreateNewTreeViewerNode(n));
+			TreeViewerNode vn = CreateNewTreeViewerNode(n);
+			nodes.Add(vn);
+			if (SelectedNode != null)
+				SelectedNode.childLinks.Add(new NodeLink() { childNode = vn });
+			LayoutNodes();
+		}
+
+		private void LayoutNodes()
+		{
+			if (nodes.Count == 0)
+				return;
+			nodes[0].X = 25;
+			nodes[0].Y = 25;
+			nodes[0].LayoutChildNodes();
 		}
 
 		#endregion
