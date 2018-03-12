@@ -66,6 +66,11 @@ namespace Assets.Scripts.Editor.TreeViewer
 			}
 		}
 
+		public void DeleteSelectedNode()
+		{
+			throw new NotImplementedException();
+		}
+
 		public Popup CurrentPopup
 		{
 			get

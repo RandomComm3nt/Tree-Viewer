@@ -55,6 +55,11 @@ namespace Assets.Scripts.Editor.TreeViewer
 				Window.AddNodeToTree();
 			}
 
+			if (GUILayout.Button("Delete", GUILayout.Width(100)))
+			{
+				Window.DeleteSelectedNode();
+			}
+
 			GUILayout.EndHorizontal();
 
 			GUILayout.EndArea();
