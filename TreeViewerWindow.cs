@@ -209,7 +209,11 @@ namespace Assets.Scripts.Editor.TreeViewer
 			TreeViewerNode vn = CreateNewTreeViewerNode(n);
 			nodes.Add(vn);
 			if (SelectedNode != null)
-				SelectedNode.childLinks.Add(new NodeLink() { childNode = vn });
+			{
+				NodeLink nl = new NodeLink() { childNode = vn, parentNode = vn };
+				SelectedNode.childLinks.Add(nl);
+				vn.parentLink = nl;
+			}
 			LayoutNodes();
 		}
 
@@ -217,9 +221,17 @@ namespace Assets.Scripts.Editor.TreeViewer
 		{
 			if (nodes.Count == 0)
 				return;
-			nodes[0].X = 25;
-			nodes[0].Y = 25;
-			nodes[0].LayoutChildNodes();
+			float y = 20;
+			foreach (TreeViewerNode node in nodes)
+			{
+				if (node.parentLink == null)
+				{
+					node.X = 20;
+					node.Y = y;
+					y += node.LayoutChildNodes() + 10;
+				}
+			}
+			
 		}
 
 		#endregion
